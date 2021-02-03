@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const csvWriter = createCsvWriter({
-  path: "results/out.csv",
+  path: "out.csv",
   header: [
     { id: "company", title: "Company" },
     { id: "categories", title: "Categories" },
@@ -16,14 +16,19 @@ const csvWriter = createCsvWriter({
     { id: "employees", title: "Employees" },
     { id: "location", title: "Location" },
   ],
-});
+})
 
 const url = "https://clutch.co/developers/ecommerce";
 const prfbase = "https://clutch.co";
 
 const fetchData = async () => {
+  const resp = await axios(url)
+  let temp = cheerio.load(resp.data)
+  const total_counts = parseInt(temp(".tabs-info").text().replace(/\D/g, ""));
+  const totalPages = Math.ceil(total_counts/20);
   let data = [];
-  for (let j = 0; j < 656; j++) {
+
+  for (let j = 0; j < totalPages; j++) {
     const res = await axios(url + `?page=${j}`)
     let html = res.data;
     let $ = cheerio.load(html);

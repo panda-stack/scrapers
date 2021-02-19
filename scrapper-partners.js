@@ -22,7 +22,7 @@ const url = "https://partners.bigcommerce.com/directory/";
 const fetchData = async () => {
   browser = await puppeteer.launch({
     defaultViewport: null,
-    headless: true,
+    headless: false,
     // userDataDir: "./puppeteer_data",
     // ignoreDefaultArgs: ["--disable-extensions"],
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -52,7 +52,7 @@ const fetchData = async () => {
   } finally {
     // await page.close()
   }
-  let data = []
+  let data = [], cnt = 0, err = 0
 
   for (let j = 0; j < totalPages; j++) {
     console.log(j)
@@ -115,11 +115,25 @@ const fetchData = async () => {
           middata["verticals_serviced"] = details.verticals
           middata["clients"] = details.clients
         } catch {
+          if (err > 5) {
+            err =0
+          } else {
+            i = i - 1
+            err = err + 1
+          }
         } finally {
         }
         data.push(middata)
       }
-    } catch {} finally {}
+    } catch {
+      console.log("error")
+      if (cnt > 5) {
+        cnt =0
+      } else {
+        j = j - 1
+        cnt = cnt + 1
+      }
+    } finally {}
   }
 
   return data

@@ -47,7 +47,6 @@ const fetchData = async () => {
       let total_counts = parseInt(temp.querySelector('b').textContent.replace(/\D/g, ""))
       return Math.ceil(total_counts/15)
     })
-    totalPages = Math.ceil(total/15)
   } catch{
   } finally {
     // await page.close()

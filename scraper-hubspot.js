@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer")
+var axios = require('axios')
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const csvWriter = createCsvWriter({
@@ -9,84 +9,39 @@ const csvWriter = createCsvWriter({
   ],
 })
 
-const url = "https://ecosystem.hubspot.com/marketplace/solutions";
-
 const fetchData = async () => {
-  browser = await puppeteer.launch({
-    defaultViewport: null,
-    headless: false,
-    // userDataDir: "./puppeteer_data",
-    // ignoreDefaultArgs: ["--disable-extensions"],
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    ignoreHTTPSErrors: false,
-  });
-  const page = await browser.newPage();
-  page.setDefaultNavigationTimeout(90000);
-  await page.setRequestInterception(true);
-  page.on("request", (req) => {
-    if (req.resourceType() === "image") {
-      req.abort();
-    } else {
-      req.continue();
+  var data = JSON.stringify([{"sortFields":["PARTNER_TIER_DESC","PARTNER_TYPE_ASC","REVIEW_COUNT_DESC","OLDEST"]}]);
+
+  var config = {
+    method: 'post',
+    url: 'https://api.hubspot.com/ecosystem/public/v1/profiles/search?hs_static_app=ecosystem-marketplace-solutions-ui&hs_static_app_version=1.1907',
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    data : data
+  };
+  
+  var total_counts = await axios(config)
+    .then(resp => resp.data[0].total)
+    .catch(error => error);
+  var count = Math.ceil(total_counts/100)
+  let result = []
+  for (let i = 0; i < count; i++) {
+    console.log(i)
+    data = JSON.stringify([{"sortFields":["PARTNER_TIER_DESC","PARTNER_TYPE_ASC","REVIEW_COUNT_DESC","OLDEST"], "limit": 100, "offset": i * 100}])
+    config.data = data
+    let items = await axios(config)
+      .then(resp => resp.data[0].items)
+      .catch(error => error)
+    for (let item of items) {
+      let middata = {}
+      middata["company_name"] = item.name
+      middata["company_website"] = await axios(`https://api.hubspot.com/ecosystem/public/v1/profiles/details?hs_static_app=ecosystem-marketplace-solutions-ui&hs_static_app_version=1.1907&slug=${item.slug}&published=true`)
+        .then(resp => resp.data.websiteUrl)
+      result.push(middata)
     }
-  });
-  let totalPages;
-  await page.goto(url)
-  await page.waitForSelector("div.UICardGrid__CardGrid-sc-1z11f6b-0")
-  try {
-    totalPages = await page.evaluate(() => {
-      let temp = document.querySelector('span.private-big').textContent.split("of")
-      let total_counts = parseInt(temp[1].replace(/\D/g, ""))
-      return Math.ceil(total_counts/45)
-    })
-  } catch{
-  } finally {
-    // await page.close()
   }
-  let data = [], cnt = 0
-
-  for (let j = 1; j < 2; j++) {
-    console.log(j)
-    await page.goto(url + `/page/${j}`)
-    await page.waitForSelector("div.UICardGrid__CardGrid-sc-1z11f6b-0")
-    try {
-      details = await page.evaluate(() => {
-        let items = document.querySelector('div.UICardGrid__CardGrid-sc-1z11f6b-0').querySelectorAll('a')
-        let profiles = []
-        for(let item of items) {
-          profiles.push(item.getAttribute('href'))
-        }
-        return profiles     
-      })
-      for (let i = 0; i < details.length; i++) {
-        let middata = {}
-        await page.goto('https://ecosystem.hubspot.com' + details[i])
-        await page.waitForSelector("div.MainSection-sc-91lyhu-0.gdlRKr")
-        try {
-          profile = await page.evaluate(() => {
-            let website = document.querySelectorAll("a.uiLinkDark")[1].getAttribute('href')
-            let title = document.querySelector("h1.Heading-byq8cq-0.H1-sc-1e4jozh-0").textContent.trim()
-            return {title, website}
-          })
-          middata["company_name"] = profile.title
-          middata["company_website"] = profile.website
-        } catch {
-        } finally {
-        }
-        data.push(middata)
-      }
-    } catch {
-      console.log("error")
-      if (cnt > 5) {
-        cnt =0
-      } else {
-        j = j - 1
-        cnt = cnt + 1
-      }
-    } finally {}
-  }
-
-  return data
+  return result
 }
 
 const write = async () => {

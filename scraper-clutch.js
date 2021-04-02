@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const csvWriter = createCsvWriter({
-  path: "out.csv",
+  path: "clutch1.csv",
   header: [
     { id: "company", title: "Company" },
     { id: "categories", title: "Categories" },
@@ -25,7 +25,7 @@ const fetchData = async () => {
   const resp = await axios(url)
   let temp = cheerio.load(resp.data)
   const total_counts = parseInt(temp(".tabs-info").text().replace(/\D/g, ""));
-  const totalPages = Math.ceil(total_counts/20);
+  const totalPages = Math.ceil(total_counts/50);
   let data = [];
 
   for (let j = 0; j < totalPages; j++) {
@@ -34,7 +34,7 @@ const fetchData = async () => {
     let $ = cheerio.load(html);
     let items = $(".provider-row");
     let descs = $(".col-md-3.provider-info__description");
-    let info = $(".company_info__wrap");
+    let info = $(".provider-info--header");
     let focuses = $(".chart-label.hidden-xs");
     let detail = $(".provider-info__details");
     let providerdetails = $(".provider-detail");

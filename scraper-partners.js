@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer")
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const csvWriter = createCsvWriter({
-  path: "out.csv",
+  path: "partners.csv",
   header: [
     { id: "company_name", title: "Company Name" },
     { id: "company_website", title: "Company Website" },

@@ -1,11 +1,15 @@
-var csv = require("csv-parser");
+var XLSX = require("xlsx");
 var fs = require("fs");
 const json2csv = require("json2csv");
 const axios = require("axios");
 
-var dataArray = [],
-  originData = [];
+var workbook = XLSX.readFile("input/AMER.xlsx");
+var sheet_name_list = workbook.SheetNames;
 
+var worksheet = workbook.Sheets[sheet_name_list[0]];
+var originHeaders = {};
+var originData = [],
+  dataArray = [];
 const new_columns = [
   "industry",
   "job_company_name",
@@ -45,83 +49,62 @@ const new_columns = [
   "cdn",
 ];
 
-fs.createReadStream("input/APAC-Layer0.csv")
-  .pipe(csv())
-  .on("data", function (data) {
-    originData.push(data);
-  })
-  .on("end", function () {
-    write();
+for (z in worksheet) {
+  if (z[0] === "!") continue;
+
+  //parse out the column, row, and value
+  var tt = 0;
+  for (var i = 0; i < z.length; i++) {
+    if (!isNaN(z[i])) {
+      tt = i;
+      break;
+    }
+  }
+  var col = z.substring(0, tt);
+  var row = parseInt(z.substring(tt));
+  var value = worksheet[z].v;
+  //store header names
+  if (row == 1 && value) {
+    originHeaders[col] = value;
+    continue;
+  }
+
+  if (!originData[row]) originData[row] = {};
+  originData[row][originHeaders[col]] = value;
+}
+//drop those first two rows which are empty
+originData.shift();
+originData.shift();
+// console.log(data[0]);
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
   });
+}
 
 const write = async () => {
   for (let i = 0; i < originData.length; i++) {
     let data = originData[i];
-    console.log("######", data);
+    if (!data) continue;
     let new_data = {};
     if (data.Website != null) {
       var website = data.Website.replace(/https:\/\//g, "")
         .replace(/http:\/\//g, "")
         .split("/")[0];
       console.log("website==>", website);
+      await sleep(12000);
       new_data = await getData(website);
-
-      try {
-        await axios
-          .get(
-            `https://api.apollo.io/v1/organizations/enrich?api_key=hwZog2ZLdAackA9IdoRTZg&domain=${website}`
-          )
-          .then((resp) => {
-            if (resp.data.organization) {
-              new_data.estimated_num_employees =
-                resp.data.organization.estimated_num_employees;
-              new_data.annual_revenue_printed =
-                resp.data.organization.annual_revenue_printed;
-              new_data.annual_revenue = resp.data.organization.annual_revenue;
-            }
-          });
-      } catch (error) {}
-
-      try {
-        await axios
-          .get(
-            `https://jianxing-chao-api-default.moovweb-edge.io/api/convert/cwv?domain=${website}`
-          )
-          .then((resp) => {
-            new_data.CLS = resp.data.CLS;
-            new_data.FID = resp.data.FID;
-            new_data.LCP = resp.data.LCP;
-            full_domain = resp.data.domain;
-          });
-      } catch (error) {}
-
-      try {
-        await axios
-          .get(
-            `https://jianxing-chao-api-default.moovweb-edge.io/api/technology?domain=${website}`
-          )
-          .then((resp) => {
-            new_data.headless = resp.data.headless;
-            new_data.is_modern = resp.data.is_modern;
-            new_data.modern = resp.data.modern;
-            new_data.is_cms = resp.data.is_cms;
-            new_data.cms = resp.data.cms;
-            new_data.is_cart = resp.data.is_cart;
-            new_data.shopping_cart = resp.data.shopping_cart;
-            new_data.cdn = resp.data.cdn;
-          });
-      } catch (error) {}
     }
-
     new_columns.map((item) => {
       data[item] = new_data[item];
     });
     dataArray.push(data);
   }
   var result = json2csv.parse(dataArray, {
-    fields: Object.keys(dataArray[0]),
+    fields: [...Object.values(originHeaders), ...new_columns],
   });
-  fs.writeFileSync("results/APAC-Layer0.csv", result);
+  fs.writeFileSync("results/amer.csv", result);
 };
 
 const getData = async (website) => {
@@ -187,7 +170,58 @@ const enrichment = async (data) => {
     new_data.builtwith = `builtwith.com/${website}`;
     new_data.website_traffic = `www.similarweb.com/website/${website}`;
     new_data.pagespeed_insights = `developers.google.com/speed/pagespeed/insights/?url=${website}`;
+
+    try {
+      const resp = await axios.get(
+        `https://api.apollo.io/v1/organizations/enrich?api_key=hwZog2ZLdAackA9IdoRTZg&domain=${website}`
+      );
+
+      if (resp.data.organization) {
+        new_data.estimated_num_employees =
+          resp.data.organization.estimated_num_employees;
+        new_data.annual_revenue_printed =
+          resp.data.organization.annual_revenue_printed;
+        new_data.annual_revenue = resp.data.organization.annual_revenue;
+      }
+    } catch (error) {}
+
+    try {
+      await axios
+        .get(
+          `https://jianxing-chao-api-default.moovweb-edge.io/api/convert/cwv?domain=${website}`
+        )
+        .then((resp) => {
+          new_data.CLS = resp.data.CLS;
+          new_data.FID = resp.data.FID;
+          new_data.LCP = resp.data.LCP;
+          full_domain = resp.data.domain;
+        });
+    } catch (error) {}
+
+    try {
+      await axios
+        .get(
+          `https://jianxing-chao-api-default.moovweb-edge.io/api/technology?domain=${website}`
+        )
+        .then((resp) => {
+          new_data.headless = resp.data.headless;
+          new_data.is_modern = resp.data.is_modern;
+          new_data.modern = resp.data.modern;
+          new_data.is_cms = resp.data.is_cms;
+          new_data.cms = resp.data.cms;
+          new_data.is_cart = resp.data.is_cart;
+          new_data.shopping_cart = resp.data.shopping_cart;
+          new_data.cdn = resp.data.cdn;
+        });
+    } catch (error) {}
   }
 
   return new_data;
 };
+
+write();
+
+// var result = json2csv.parse(dataArray, {
+//   fields: Object.keys(dataArray[0]),
+// });
+// fs.writeFileSync("results/apac.csv", result);

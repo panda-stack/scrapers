@@ -2,9 +2,11 @@ var axios = require("axios");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const csvWriter = createCsvWriter({
-  path: "results/similarweb.csv",
+  path: "results/scraping/similarweb2.csv",
   header: [
     { id: "site", title: "Website" },
+    { id: "type", title: "Website Type" },
+    { id: "category", title: "Website Category" },
     { id: "pageviews", title: "Pageviews" },
     { id: "bounce_rate", title: "Bounce Rate" },
     { id: "cdn", title: "CDN" },
@@ -74,8 +76,8 @@ const fetchData = async () => {
     isNewOnly: false,
     asc: false,
     orderBy: "visits",
-    page: 0,
-    pageSize: 50,
+    page: 4,
+    pageSize: 500,
     columns: [
       {
         alias: "site",
@@ -153,6 +155,11 @@ const fetchData = async () => {
         name: "Advertising",
       },
       {
+        alias: "site_category",
+        type: "regular",
+        name: "site_category",
+      },
+      {
         alias: "favicon",
         type: "regular",
         name: "favicon",
@@ -167,6 +174,13 @@ const fetchData = async () => {
       contactsFilters: {},
       leadsFilters: {
         countries: [840],
+        monthlyVisits: {
+          from: 150000,
+        },
+        websiteType: {
+          type: "ecommerce",
+          inclusion: "includeOnly",
+        },
       },
     },
     device: "Total",
@@ -178,7 +192,7 @@ const fetchData = async () => {
     url: "https://pro.similarweb.com/api/sales-leads-generator/v2/leads",
     headers: {
       cookie:
-        ".SGTOKEN.SIMILARWEB.COM=GqCqyi1CzQZ_4_GX-_MWPE_6S3pc9vE9hZhdwSSBi-F-MAhxqnlkwM41IB_DpqJtpyU-XalwgiVgPcs-zV4n91cBibNGJaEz8lkSU3YBkX1HJDc2bJS2tBkQIMgWusxfVeHKyPwiFLUxlX1yXSRUt_0Qmy0nAJ37gYdSKAf4J6X2E07y5aaqvTJfbu8js_st55QFe-W5TWyatAY2Kdvj4oHkl7iV8iJirKDLvrbYEOwXKxkFPaS0A1Ys6zTZqyjS01XZkl6UTzvZUKGTUOM2eSng4i0-vmNqRhKdhUZOWOAmpayLihgueirN_Ve2z3t4j4Uukp2cO4TPXDNqCF7sDzZRZtWfS1rjBMObWngLL9MBdTzRik9N93O9956sVUXq1f6FrTTF1KhXIAu9wh1fyblujvqLoqqctYTc6bEGo6lHtnW_AJiOzLHEmjhHZbl3; ",
+        ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQt5diqGJWUZB2A6D0O5KHTt1nvvXf9xp1nv3EtfjZambnVceGDFHu-QBU6j-wciQoWKxU_fmFWagfxyV0ETBnboH0Mrteut6etXu7wLbb88z5BnlVRTUPZkXD87GaQ8Ey83lPmEsI4syOynN4UJM4n-Emh-CGmwGQsyX2if_1wkX5kEvhRn_rCTivGam1CnUaT8gPbGR1j6H-iGngp1xDIdPUnYVDz-917A4Sfk1Ur5IAI5W1_KrxAkUwA5rmeueFi94DVtg5lF_1l4zTaAw-L-klNqUU_y-PJVmcjOt99u4HMup5jogKvJAQWHVnKD2bYfUWXF_pR_OpTOMLDIBXZ1z_lsNKktlqzL3W3wWTNp4BBlO43ALzZvA6ZAunf02KyrwfeCKXzn-d3Gzw_7YzS39kzZeo67DkKYhHNii4OlF;",
       "Content-Type": "application/json",
     },
     data: data,
@@ -189,6 +203,8 @@ const fetchData = async () => {
     for (let item of items.data.rows) {
       let middata = {};
       middata["site"] = item.site;
+      middata["type"] = "ecommerce";
+      middata["category"] = item.site_category;
       middata["pageviews"] = item.pageviews;
       middata["bounce_rate"] = item.bounce_rate;
       middata["cdn"] = item["techCategory:Content Delivery Network"].join(", ");
@@ -209,35 +225,40 @@ const fetchData = async () => {
         headers: {
           "content-type": "application/json",
           cookie:
-            ".SGTOKEN.SIMILARWEB.COM=GqCqyi1CzQZ_4_GX-_MWPE_6S3pc9vE9hZhdwSSBi-F-MAhxqnlkwM41IB_DpqJtpyU-XalwgiVgPcs-zV4n91cBibNGJaEz8lkSU3YBkX1HJDc2bJS2tBkQIMgWusxfVeHKyPwiFLUxlX1yXSRUt_0Qmy0nAJ37gYdSKAf4J6X2E07y5aaqvTJfbu8js_st55QFe-W5TWyatAY2Kdvj4oHkl7iV8iJirKDLvrbYEOwXKxkFPaS0A1Ys6zTZqyjS01XZkl6UTzvZUKGTUOM2eSng4i0-vmNqRhKdhUZOWOAmpayLihgueirN_Ve2z3t4j4Uukp2cO4TPXDNqCF7sDzZRZtWfS1rjBMObWngLL9MBdTzRik9N93O9956sVUXq1f6FrTTF1KhXIAu9wh1fyblujvqLoqqctYTc6bEGo6lHtnW_AJiOzLHEmjhHZbl3;",
+            ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQt5diqGJWUZB2A6D0O5KHTt1nvvXf9xp1nv3EtfjZambnVceGDFHu-QBU6j-wciQoWKxU_fmFWagfxyV0ETBnboH0Mrteut6etXu7wLbb88z5BnlVRTUPZkXD87GaQ8Ey83lPmEsI4syOynN4UJM4n-Emh-CGmwGQsyX2if_1wkX5kEvhRn_rCTivGam1CnUaT8gPbGR1j6H-iGngp1xDIdPUnYVDz-917A4Sfk1Ur5IAI5W1_KrxAkUwA5rmeueFi94DVtg5lF_1l4zTaAw-L-klNqUU_y-PJVmcjOt99u4HMup5jogKvJAQWHVnKD2bYfUWXF_pR_OpTOMLDIBXZ1z_lsNKktlqzL3W3wWTNp4BBlO43ALzZvA6ZAunf02KyrwfeCKXzn-d3Gzw_7YzS39kzZeo67DkKYhHNii4OlF;",
         },
       };
       const competitors = await axios(config1);
-      for (let i = 0; i < competitors.data.length; i++) {
-        middata[`competitor${i + 1}`] = competitors.data[i].Domain;
-      }
-      var config2 = {
-        method: "get",
-        url: `https://pro.similarweb.com/widgetApi/WebsiteOverview/EngagementOverview/Table?ShouldGetVerifiedData=false&country=999&from=2021%7C12%7C01&includeLeaders=true&includeSubDomains=true&isWindow=false&keys=${middata["competitor1"]}%2C${middata["competitor2"]}%2C${middata["competitor3"]}%2C${middata["competitor4"]}&timeGranularity=Monthly&to=2022%7C02%7C28&webSource=Total`,
-        headers: {
-          "content-type": "application/json",
-          cookie:
-            ".SGTOKEN.SIMILARWEB.COM=GqCqyi1CzQZ_4_GX-_MWPE_6S3pc9vE9hZhdwSSBi-F-MAhxqnlkwM41IB_DpqJtpyU-XalwgiVgPcs-zV4n91cBibNGJaEz8lkSU3YBkX1HJDc2bJS2tBkQIMgWusxfVeHKyPwiFLUxlX1yXSRUt_0Qmy0nAJ37gYdSKAf4J6X2E07y5aaqvTJfbu8js_st55QFe-W5TWyatAY2Kdvj4oHkl7iV8iJirKDLvrbYEOwXKxkFPaS0A1Ys6zTZqyjS01XZkl6UTzvZUKGTUOM2eSng4i0-vmNqRhKdhUZOWOAmpayLihgueirN_Ve2z3t4j4Uukp2cO4TPXDNqCF7sDzZRZtWfS1rjBMObWngLL9MBdTzRik9N93O9956sVUXq1f6FrTTF1KhXIAu9wh1fyblujvqLoqqctYTc6bEGo6lHtnW_AJiOzLHEmjhHZbl3;",
-        },
-      };
-      const competitorsRes = await axios(config2);
-      const competitorsData = competitorsRes.data.Data;
-      for (let i = 0; i < competitorsData.length; i++) {
-        middata[`competitor${i + 1}_pageviews`] =
-          competitorsData[i].AvgMonthVisits.Value;
-        middata[`competitor${i + 1}_bounceRate`] =
-          competitorsData[i].BounceRate.Value;
-        middata[`competitor${i + 1}_uniqueVisitors`] =
-          competitorsData[i].UniqueUsers.Value;
-        middata[`competitor${i + 1}_pagesPerVisit`] =
-          competitorsData[i].PagesPerVisit.Value;
-        middata[`competitor${i + 1}_visitDuration`] =
-          competitorsData[i].AvgVisitDuration.Value;
+      if (competitors.data.length > 0) {
+        let keys = "";
+        for (let i = 0; i < competitors.data.length; i++) {
+          middata[`competitor${i + 1}`] = competitors.data[i].Domain;
+          keys += competitors.data[i].Domain + "%2C";
+        }
+        keys = keys.slice(0, keys.length - 3);
+        var config2 = {
+          method: "get",
+          url: `https://pro.similarweb.com/widgetApi/WebsiteOverview/EngagementOverview/Table?ShouldGetVerifiedData=false&country=999&from=2021%7C12%7C01&includeLeaders=true&includeSubDomains=true&isWindow=false&keys=${keys}&timeGranularity=Monthly&to=2022%7C02%7C28&webSource=Total`,
+          headers: {
+            "content-type": "application/json",
+            cookie:
+              ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQt5diqGJWUZB2A6D0O5KHTt1nvvXf9xp1nv3EtfjZambnVceGDFHu-QBU6j-wciQoWKxU_fmFWagfxyV0ETBnboH0Mrteut6etXu7wLbb88z5BnlVRTUPZkXD87GaQ8Ey83lPmEsI4syOynN4UJM4n-Emh-CGmwGQsyX2if_1wkX5kEvhRn_rCTivGam1CnUaT8gPbGR1j6H-iGngp1xDIdPUnYVDz-917A4Sfk1Ur5IAI5W1_KrxAkUwA5rmeueFi94DVtg5lF_1l4zTaAw-L-klNqUU_y-PJVmcjOt99u4HMup5jogKvJAQWHVnKD2bYfUWXF_pR_OpTOMLDIBXZ1z_lsNKktlqzL3W3wWTNp4BBlO43ALzZvA6ZAunf02KyrwfeCKXzn-d3Gzw_7YzS39kzZeo67DkKYhHNii4OlF;",
+          },
+        };
+        const competitorsRes = await axios(config2);
+        const competitorsData = competitorsRes.data.Data;
+        for (let i = 0; i < competitorsData.length; i++) {
+          middata[`competitor${i + 1}_pageviews`] =
+            competitorsData[i].AvgMonthVisits.Value;
+          middata[`competitor${i + 1}_bounceRate`] =
+            competitorsData[i].BounceRate.Value;
+          middata[`competitor${i + 1}_uniqueVisitors`] =
+            competitorsData[i].UniqueUsers.Value;
+          middata[`competitor${i + 1}_pagesPerVisit`] =
+            competitorsData[i].PagesPerVisit.Value;
+          middata[`competitor${i + 1}_visitDuration`] =
+            competitorsData[i].AvgVisitDuration.Value;
+        }
       }
       result.push(middata);
     }

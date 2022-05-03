@@ -2,7 +2,7 @@ var axios = require("axios");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const csvWriter = createCsvWriter({
-  path: "results/scraping/similarweb2.csv",
+  path: "results/scraping/similarweb3.csv",
   header: [
     { id: "site", title: "Website" },
     { id: "type", title: "Website Type" },
@@ -76,7 +76,7 @@ const fetchData = async () => {
     isNewOnly: false,
     asc: false,
     orderBy: "visits",
-    page: 4,
+    page: 19,
     pageSize: 500,
     columns: [
       {
@@ -189,10 +189,10 @@ const fetchData = async () => {
 
   const config = {
     method: "post",
-    url: "https://pro.similarweb.com/api/sales-leads-generator/v2/leads",
+    url: "https://pro.similarweb.com/sales-api/leads-generator/v2/leads",
     headers: {
       cookie:
-        ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQt5diqGJWUZB2A6D0O5KHTt1nvvXf9xp1nv3EtfjZambnVceGDFHu-QBU6j-wciQodUoBNLqJqsONla9AiWkhacnY7SJFSIZnoxPF5pbqf7zoXZYktw4_M4qXoV6ZQQS4gXVGIxdvs8H62XbObxcfMEUjz9VFbxBMLmdWeUFkIA-8jmypHJHXrC5QUj5EfTSv5GciHwUYNNHb5_-37o4H9EpX3J_pQ1Gk9i5GNP7VT7xvFbVa8uI7uiTjG_qKgvoTFF3JpAyFgr6dlqRZDyW-GKkYx-ozPTKCjHmqFs_2k_QqNSrSi_hNKoRd_PLoFvildpzMqQQuHxPfJVAYy6tl_JURSGjz_jNMnOyv1z_ZAtRyFfOiV3Fpenemka0FKT3EkW7Z4yd1yH1t6VsQY2pYJ4h1vrKa8FIm6WRajtAd7ew;",
+        ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99DC234vKOz6fiEN3JMhuceypPqF8NElBghZfRCKvjVkfNILG22iDyv744Gnyh107p9ELkBuZJ2m2UYpvEh7wcpXYGjrlwJ2_fGKaRQT7ftaMEgOEdq38axg4nqIFYb3fWUwDqMhsGGw8aFb_Pe0-_KeL0-QqyoaUkMzQ-1Afyoa9H1wPIhx3xR5a-Rdu1niscXLJG_1z8sbMS31J9Kmy-Z9m_3FE_f8YxAa7frqIoNZUECZVHF-9v0gsUOGZNa1-g4S0oSQLHUT6uuzna5pjQDgWTTVojmKcaZhnuPT9WJ5v3aNakflBzlTqpNM3x2R4wChKKc8nd01N63MwAjm4PW0KsQYRKTadt7YgR8AGHNL;",
       "Content-Type": "application/json",
     },
     data: data,
@@ -225,7 +225,7 @@ const fetchData = async () => {
         headers: {
           "content-type": "application/json",
           cookie:
-            ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQt5diqGJWUZB2A6D0O5KHTt1nvvXf9xp1nv3EtfjZambnVceGDFHu-QBU6j-wciQodUoBNLqJqsONla9AiWkhacnY7SJFSIZnoxPF5pbqf7zoXZYktw4_M4qXoV6ZQQS4gXVGIxdvs8H62XbObxcfMEUjz9VFbxBMLmdWeUFkIA-8jmypHJHXrC5QUj5EfTSv5GciHwUYNNHb5_-37o4H9EpX3J_pQ1Gk9i5GNP7VT7xvFbVa8uI7uiTjG_qKgvoTFF3JpAyFgr6dlqRZDyW-GKkYx-ozPTKCjHmqFs_2k_QqNSrSi_hNKoRd_PLoFvildpzMqQQuHxPfJVAYy6tl_JURSGjz_jNMnOyv1z_ZAtRyFfOiV3Fpenemka0FKT3EkW7Z4yd1yH1t6VsQY2pYJ4h1vrKa8FIm6WRajtAd7ew;",
+            ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99DC234vKOz6fiEN3JMhuceypPqF8NElBghZfRCKvjVkfNILG22iDyv744Gnyh107p9ELkBuZJ2m2UYpvEh7wcpXYGjrlwJ2_fGKaRQT7ftaMEgOEdq38axg4nqIFYb3fWUwDqMhsGGw8aFb_Pe0-_KeL0-QqyoaUkMzQ-1Afyoa9H1wPIhx3xR5a-Rdu1niscXLJG_1z8sbMS31J9Kmy-Z9m_3FE_f8YxAa7frqIoNZUECZVHF-9v0gsUOGZNa1-g4S0oSQLHUT6uuzna5pjQDgWTTVojmKcaZhnuPT9WJ5v3aNakflBzlTqpNM3x2R4wChKKc8nd01N63MwAjm4PW0KsQYRKTadt7YgR8AGHNL;",
         },
       };
       const competitors = await axios(config1);
@@ -242,7 +242,7 @@ const fetchData = async () => {
           headers: {
             "content-type": "application/json",
             cookie:
-              ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQt5diqGJWUZB2A6D0O5KHTt1nvvXf9xp1nv3EtfjZambnVceGDFHu-QBU6j-wciQodUoBNLqJqsONla9AiWkhacnY7SJFSIZnoxPF5pbqf7zoXZYktw4_M4qXoV6ZQQS4gXVGIxdvs8H62XbObxcfMEUjz9VFbxBMLmdWeUFkIA-8jmypHJHXrC5QUj5EfTSv5GciHwUYNNHb5_-37o4H9EpX3J_pQ1Gk9i5GNP7VT7xvFbVa8uI7uiTjG_qKgvoTFF3JpAyFgr6dlqRZDyW-GKkYx-ozPTKCjHmqFs_2k_QqNSrSi_hNKoRd_PLoFvildpzMqQQuHxPfJVAYy6tl_JURSGjz_jNMnOyv1z_ZAtRyFfOiV3Fpenemka0FKT3EkW7Z4yd1yH1t6VsQY2pYJ4h1vrKa8FIm6WRajtAd7ew;",
+              ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99DC234vKOz6fiEN3JMhuceypPqF8NElBghZfRCKvjVkfNILG22iDyv744Gnyh107p9ELkBuZJ2m2UYpvEh7wcpXYGjrlwJ2_fGKaRQT7ftaMEgOEdq38axg4nqIFYb3fWUwDqMhsGGw8aFb_Pe0-_KeL0-QqyoaUkMzQ-1Afyoa9H1wPIhx3xR5a-Rdu1niscXLJG_1z8sbMS31J9Kmy-Z9m_3FE_f8YxAa7frqIoNZUECZVHF-9v0gsUOGZNa1-g4S0oSQLHUT6uuzna5pjQDgWTTVojmKcaZhnuPT9WJ5v3aNakflBzlTqpNM3x2R4wChKKc8nd01N63MwAjm4PW0KsQYRKTadt7YgR8AGHNL;",
           },
         };
         const competitorsRes = await axios(config2);

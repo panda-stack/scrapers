@@ -2,7 +2,7 @@ var axios = require("axios");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const csvWriter = createCsvWriter({
-  path: "results/scraping/similarweb3.csv",
+  path: "results/scraping/temp.csv",
   header: [
     { id: "site", title: "Website" },
     { id: "type", title: "Website Type" },
@@ -76,8 +76,8 @@ const fetchData = async () => {
     isNewOnly: false,
     asc: false,
     orderBy: "visits",
-    page: 19,
-    pageSize: 500,
+    page: 437,
+    pageSize: 50,
     columns: [
       {
         alias: "site",
@@ -178,7 +178,7 @@ const fetchData = async () => {
           from: 150000,
         },
         websiteType: {
-          type: "ecommerce",
+          type: "advertiser",
           inclusion: "includeOnly",
         },
       },
@@ -192,7 +192,7 @@ const fetchData = async () => {
     url: "https://pro.similarweb.com/sales-api/leads-generator/v2/leads",
     headers: {
       cookie:
-        ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99DC234vKOz6fiEN3JMhuceypPqF8NElBghZfRCKvjVkfNILG22iDyv744Gnyh107p9ELkBuZJ2m2UYpvEh7wcpXYGjrlwJ2_fGKaRQT7ftaMEgOEdq38axg4nqIFYb3fWUwDqMhsGGw8aFb_Pe0-_KeL0-QqyoaUkMzQ-1Afyoa9H1wPIhx3xR5a-Rdu1niscXLJG_1z8sbMS31J9Kmy-Z9m_3FE_f8YxAa7frqIoNZUECZVHF-9v0gsUOGZNa1-g4S0oSQLHUT6uuzna5pjQDgWTTVojmKcaZhnuPT9WJ5v3aNakflBzlTqpNM3x2R4wChKKc8nd01N63MwAjm4PW0KsQYRKTadt7YgR8AGHNL;",
+        ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99UGHpzX7uJ4yrm_G_4saZ_UJsqm4rcpv7Je1v8lVdq86lML86D_xBjOchM13I1UnAasNssnqs6-X7jqQ_fn5eLwmsh6Cx20nlO2oogWn_IuVDA9z-xhhdU9cYrbqaFZQc8ybC2wok_wSeQ0U3PAXmwS-lt7OlV7AgjKTUmj79pcyfjARoWZe6wNDVbZH0Kdg5K1jcMRSMyOMvyGp_sLPEE8zh6iKa99o5ATixYEu_o02mixgEyZgNiPqQFgItWkzRwuk7oi_uLYNtaijReTTnZx0VVMln9fDnGISPRLjODRtQ0WS7qETNZqd-syN7ZdaLXTEObqk9XAwVTiLRjj40TJ8Pgri2Ou2KyNUXsZwC_v;",
       "Content-Type": "application/json",
     },
     data: data,
@@ -203,7 +203,7 @@ const fetchData = async () => {
     for (let item of items.data.rows) {
       let middata = {};
       middata["site"] = item.site;
-      middata["type"] = "ecommerce";
+      middata["type"] = "advertiser";
       middata["category"] = item.site_category;
       middata["pageviews"] = item.pageviews;
       middata["bounce_rate"] = item.bounce_rate;
@@ -225,7 +225,7 @@ const fetchData = async () => {
         headers: {
           "content-type": "application/json",
           cookie:
-            ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99DC234vKOz6fiEN3JMhuceypPqF8NElBghZfRCKvjVkfNILG22iDyv744Gnyh107p9ELkBuZJ2m2UYpvEh7wcpXYGjrlwJ2_fGKaRQT7ftaMEgOEdq38axg4nqIFYb3fWUwDqMhsGGw8aFb_Pe0-_KeL0-QqyoaUkMzQ-1Afyoa9H1wPIhx3xR5a-Rdu1niscXLJG_1z8sbMS31J9Kmy-Z9m_3FE_f8YxAa7frqIoNZUECZVHF-9v0gsUOGZNa1-g4S0oSQLHUT6uuzna5pjQDgWTTVojmKcaZhnuPT9WJ5v3aNakflBzlTqpNM3x2R4wChKKc8nd01N63MwAjm4PW0KsQYRKTadt7YgR8AGHNL;",
+            ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99UGHpzX7uJ4yrm_G_4saZ_UJsqm4rcpv7Je1v8lVdq86lML86D_xBjOchM13I1UnAasNssnqs6-X7jqQ_fn5eLwmsh6Cx20nlO2oogWn_IuVDA9z-xhhdU9cYrbqaFZQc8ybC2wok_wSeQ0U3PAXmwS-lt7OlV7AgjKTUmj79pcyfjARoWZe6wNDVbZH0Kdg5K1jcMRSMyOMvyGp_sLPEE8zh6iKa99o5ATixYEu_o02mixgEyZgNiPqQFgItWkzRwuk7oi_uLYNtaijReTTnZx0VVMln9fDnGISPRLjODRtQ0WS7qETNZqd-syN7ZdaLXTEObqk9XAwVTiLRjj40TJ8Pgri2Ou2KyNUXsZwC_v;",
         },
       };
       const competitors = await axios(config1);
@@ -233,6 +233,7 @@ const fetchData = async () => {
         let keys = "";
         for (let i = 0; i < competitors.data.length; i++) {
           middata[`competitor${i + 1}`] = competitors.data[i].Domain;
+          if (item.site === "andersonadvisors.com" && i === 3) continue;
           keys += competitors.data[i].Domain + "%2C";
         }
         keys = keys.slice(0, keys.length - 3);
@@ -242,7 +243,7 @@ const fetchData = async () => {
           headers: {
             "content-type": "application/json",
             cookie:
-              ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99DC234vKOz6fiEN3JMhuceypPqF8NElBghZfRCKvjVkfNILG22iDyv744Gnyh107p9ELkBuZJ2m2UYpvEh7wcpXYGjrlwJ2_fGKaRQT7ftaMEgOEdq38axg4nqIFYb3fWUwDqMhsGGw8aFb_Pe0-_KeL0-QqyoaUkMzQ-1Afyoa9H1wPIhx3xR5a-Rdu1niscXLJG_1z8sbMS31J9Kmy-Z9m_3FE_f8YxAa7frqIoNZUECZVHF-9v0gsUOGZNa1-g4S0oSQLHUT6uuzna5pjQDgWTTVojmKcaZhnuPT9WJ5v3aNakflBzlTqpNM3x2R4wChKKc8nd01N63MwAjm4PW0KsQYRKTadt7YgR8AGHNL;",
+              ".SGTOKEN.SIMILARWEB.COM=IiLu8yFZ00Vx1-oIUEzsQiENtoD6M5M6FLY5XItvca-Xhw5B_Gix3-9V_mO0lEuncGJBu1wO8iDiKbMoET9k99UGHpzX7uJ4yrm_G_4saZ_UJsqm4rcpv7Je1v8lVdq86lML86D_xBjOchM13I1UnAasNssnqs6-X7jqQ_fn5eLwmsh6Cx20nlO2oogWn_IuVDA9z-xhhdU9cYrbqaFZQc8ybC2wok_wSeQ0U3PAXmwS-lt7OlV7AgjKTUmj79pcyfjARoWZe6wNDVbZH0Kdg5K1jcMRSMyOMvyGp_sLPEE8zh6iKa99o5ATixYEu_o02mixgEyZgNiPqQFgItWkzRwuk7oi_uLYNtaijReTTnZx0VVMln9fDnGISPRLjODRtQ0WS7qETNZqd-syN7ZdaLXTEObqk9XAwVTiLRjj40TJ8Pgri2Ou2KyNUXsZwC_v;",
           },
         };
         const competitorsRes = await axios(config2);

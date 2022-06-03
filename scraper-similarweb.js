@@ -76,7 +76,7 @@ const fetchData = async () => {
     isNewOnly: false,
     asc: false,
     orderBy: "visits",
-    page: 437,
+    page: 0,
     pageSize: 50,
     columns: [
       {
